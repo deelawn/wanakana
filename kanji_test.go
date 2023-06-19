@@ -6,7 +6,7 @@ import (
 	"github.com/deelawn/wanakana"
 )
 
-func TestIsHiragana(t *testing.T) {
+func TestIsKanji(t *testing.T) {
 
 	var tests = []struct {
 		name     string
@@ -17,25 +17,32 @@ func TestIsHiragana(t *testing.T) {
 			name: "empty string",
 		},
 		{
-			name:     "game",
-			input:    "げーむ",
+			name:     "sword",
+			input:    "刀",
 			expected: true,
 		},
 		{
-			name:     "letter A",
-			input:    "A",
-			expected: false,
+			name:     "seppuku",
+			input:    "切腹",
+			expected: true,
 		},
 		{
-			name:     "mixed with katakana",
-			input:    "あア",
-			expected: false,
+			name:  "force",
+			input: "勢い",
+		},
+		{
+			name:  "mixed kana latin",
+			input: "あAア",
+		},
+		{
+			name:  "frog emoji",
+			input: "🐸",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := wanakana.IsHiragana(tt.input)
+			result := wanakana.IsKanji(tt.input)
 			if result != tt.expected {
 				t.Errorf("expected %t, got %t", tt.expected, result)
 			}

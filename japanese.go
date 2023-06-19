@@ -10,9 +10,12 @@ import (
 // the optional regular expression.
 func IsJapanese(s string, regex *regexp.Regexp) bool {
 
+	if len(s) == 0 {
+		return false
+	}
+
 	for _, r := range []rune(s) {
-		isJP := character.IsJapanese(r)
-		if isJP {
+		if character.IsJapanese(r) {
 			// This character is Japanese; keep going.
 			continue
 		}

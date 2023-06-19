@@ -16,6 +16,9 @@ func TestIsJapanese(t *testing.T) {
 		expected bool
 	}{
 		{
+			name: "empty string",
+		},
+		{
 			name:     "crybaby",
 			input:    "泣き虫",
 			expected: true,
