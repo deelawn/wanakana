@@ -3,6 +3,8 @@ package transform
 import (
 	"strings"
 	"sync"
+
+	"github.com/deelawn/wanakana/internal/tree"
 )
 
 // TODO:
@@ -117,84 +119,84 @@ type aliasPair struct {
 }
 
 var (
-	rtkTree   *node
-	rtkTreeMu sync.Mutex
+	rtkTreeMap   *tree.Map
+	rtkTreeMapMu sync.Mutex
 )
 
-func getRomajiToKanaTree() *node {
+func getRomajiToKanaTree() *tree.Map {
 
-	rtkTreeMu.Lock()
-	defer rtkTreeMu.Unlock()
+	rtkTreeMapMu.Lock()
+	defer rtkTreeMapMu.Unlock()
 
-	if rtkTree == nil {
-		rtkTree = createRomajiToKanaTree()
+	if rtkTreeMap == nil {
+		rtkTreeMap = createRomajiToKanaTree()
 	}
 
-	return rtkTree
+	return rtkTreeMap
 }
 
-func createRomajiToKanaTree() *node {
+func createRomajiToKanaTree() *tree.Map {
 
-	tree := new(node)
+	treeMap := new(tree.Map)
 
-	addBasicKunreiToRTKTree(tree)
-	addSpecialSymbolsToRTKTree(tree)
+	addBasicKunreiToRTKTree(treeMap)
+	addSpecialSymbolsToRTKTree(treeMap)
 
 	// Add the consonants + small y kana.
 	for consonant, yKana := range rtkConsonants {
 		for roma, kana := range rtkSmallY {
-			tree.putValue(append([]rune{consonant}, []rune(roma)...), string(yKana)+string(kana))
+			treeMap.PutValue(append([]rune{consonant}, []rune(roma)...), string(yKana)+string(kana))
 		}
 	}
 
 	// Add things like うぃ, くぃ, etc.
 	for consonant, aiueoKana := range rtkAIUEOConstructions {
 		for vowel, kana := range rtkSmallVowels {
-			tree.putValue(append([]rune(consonant), []rune(vowel)...), string(aiueoKana)+string(kana))
+			treeMap.PutValue(append([]rune(consonant), []rune(vowel)...), string(aiueoKana)+string(kana))
 		}
 	}
 
 	// Add different ways to write ん.
-	tree.putValue([]rune("n"), "ん")
-	tree.putValue([]rune("n'"), "ん")
-	tree.putValue([]rune("xn"), "ん")
+	treeMap.PutValue([]rune("n"), "ん")
+	treeMap.PutValue([]rune("n'"), "ん")
+	treeMap.PutValue([]rune("xn"), "ん")
 
 	// 'c' is nearly identical to 'k', so make a copy of it to start.
-	tree.branches['c'] = tree.branches['k'].copy()
+	treeMap.PutMap([]rune{'c'}, treeMap.GetMap([]rune{'k'}).Copy())
 
 	// Apply the aliases by inserted a copied version of the target node into a
 	// new branch path in the tree.
 	for _, pair := range rtkAliases {
-		tree.putNode([]rune(pair.from), tree.getNode([]rune(pair.to)).copy())
+		treeMap.PutMap([]rune(pair.from), treeMap.GetMap([]rune(pair.to)).Copy())
 	}
 
 	for kunreiRoma, kana := range rtkSmallLetters {
-		tree.putValue(append([]rune{'x'}, []rune(kunreiRoma)...), string(kana))
-		tree.putValue(append([]rune{'l'}, []rune(kunreiRoma)...), string(kana))
+		treeMap.PutValue(append([]rune{'x'}, []rune(kunreiRoma)...), string(kana))
+		treeMap.PutValue(append([]rune{'l'}, []rune(kunreiRoma)...), string(kana))
 
 		if altRoma := getAlternative(kunreiRoma); altRoma != "" {
-			tree.putValue(append([]rune{'x'}, []rune(altRoma)...), string(kana))
-			tree.putValue(append([]rune{'l'}, []rune(altRoma)...), string(kana))
+			treeMap.PutValue(append([]rune{'x'}, []rune(altRoma)...), string(kana))
+			treeMap.PutValue(append([]rune{'l'}, []rune(altRoma)...), string(kana))
 		}
 	}
 
 	// TODO: Make this static.
 	for roma, kana := range specialCases {
-		tree.putValue([]rune(roma), kana)
+		treeMap.PutValue([]rune(roma), kana)
 	}
 
 	// Add the little tsu when typing two of the same consonant.
 	for roma, kana := range rtkConsonants {
-		tree.putValue([]rune{roma, roma}, "っ"+string(kana))
+		treeMap.PutValue([]rune{roma, roma}, "っ"+string(kana))
 	}
 
 	// And do the same for these letters as well.
-	tree.putValue([]rune{'c', 'c'}, "っc")
-	tree.putValue([]rune{'y', 'y'}, "っy")
-	tree.putValue([]rune{'w', 'w'}, "っw")
-	tree.putValue([]rune{'j', 'j'}, "っj")
+	treeMap.PutValue([]rune{'c', 'c'}, "っc")
+	treeMap.PutValue([]rune{'y', 'y'}, "っy")
+	treeMap.PutValue([]rune{'w', 'w'}, "っw")
+	treeMap.PutValue([]rune{'j', 'j'}, "っj")
 
-	return tree
+	return treeMap
 }
 
 func getAlternative(s string) string {
@@ -217,106 +219,106 @@ func getAlternative(s string) string {
 	return ""
 }
 
-func addBasicKunreiToRTKTree(tree *node) {
-	tree.putValue([]rune("a"), "あ")
-	tree.putValue([]rune("i"), "い")
-	tree.putValue([]rune("u"), "う")
-	tree.putValue([]rune("e"), "え")
-	tree.putValue([]rune("o"), "お")
-	tree.putValue([]rune("ka"), "か")
-	tree.putValue([]rune("ki"), "き")
-	tree.putValue([]rune("ku"), "く")
-	tree.putValue([]rune("ke"), "け")
-	tree.putValue([]rune("ko"), "こ")
-	tree.putValue([]rune("sa"), "さ")
-	tree.putValue([]rune("si"), "し")
-	tree.putValue([]rune("su"), "す")
-	tree.putValue([]rune("se"), "せ")
-	tree.putValue([]rune("so"), "そ")
-	tree.putValue([]rune("ta"), "た")
-	tree.putValue([]rune("ti"), "ち")
-	tree.putValue([]rune("tu"), "つ")
-	tree.putValue([]rune("te"), "て")
-	tree.putValue([]rune("to"), "と")
-	tree.putValue([]rune("na"), "な")
-	tree.putValue([]rune("ni"), "に")
-	tree.putValue([]rune("nu"), "ぬ")
-	tree.putValue([]rune("ne"), "ね")
-	tree.putValue([]rune("no"), "の")
-	tree.putValue([]rune("ha"), "は")
-	tree.putValue([]rune("hi"), "ひ")
-	tree.putValue([]rune("hu"), "ふ")
-	tree.putValue([]rune("he"), "へ")
-	tree.putValue([]rune("ho"), "ほ")
-	tree.putValue([]rune("ma"), "ま")
-	tree.putValue([]rune("mi"), "み")
-	tree.putValue([]rune("mu"), "む")
-	tree.putValue([]rune("me"), "め")
-	tree.putValue([]rune("mo"), "も")
-	tree.putValue([]rune("ya"), "や")
-	tree.putValue([]rune("yu"), "ゆ")
-	tree.putValue([]rune("yo"), "よ")
-	tree.putValue([]rune("ra"), "ら")
-	tree.putValue([]rune("ri"), "り")
-	tree.putValue([]rune("ru"), "る")
-	tree.putValue([]rune("re"), "れ")
-	tree.putValue([]rune("ro"), "ろ")
-	tree.putValue([]rune("wa"), "わ")
-	tree.putValue([]rune("wi"), "ゐ")
-	tree.putValue([]rune("wu"), "う")
-	tree.putValue([]rune("we"), "ゑ")
-	tree.putValue([]rune("wo"), "を")
-	tree.putValue([]rune("ga"), "が")
-	tree.putValue([]rune("gi"), "ぎ")
-	tree.putValue([]rune("gu"), "ぐ")
-	tree.putValue([]rune("ge"), "げ")
-	tree.putValue([]rune("go"), "ご")
-	tree.putValue([]rune("za"), "ざ")
-	tree.putValue([]rune("zi"), "じ")
-	tree.putValue([]rune("zu"), "ず")
-	tree.putValue([]rune("ze"), "ぜ")
-	tree.putValue([]rune("zo"), "ぞ")
-	tree.putValue([]rune("da"), "だ")
-	tree.putValue([]rune("di"), "ぢ")
-	tree.putValue([]rune("du"), "づ")
-	tree.putValue([]rune("de"), "で")
-	tree.putValue([]rune("do"), "ど")
-	tree.putValue([]rune("ba"), "ば")
-	tree.putValue([]rune("bi"), "び")
-	tree.putValue([]rune("bu"), "ぶ")
-	tree.putValue([]rune("be"), "べ")
-	tree.putValue([]rune("bo"), "ぼ")
-	tree.putValue([]rune("pa"), "ぱ")
-	tree.putValue([]rune("pi"), "ぴ")
-	tree.putValue([]rune("pu"), "ぷ")
-	tree.putValue([]rune("pe"), "ぺ")
-	tree.putValue([]rune("po"), "ぽ")
-	tree.putValue([]rune("va"), "ゔぁ")
-	tree.putValue([]rune("vi"), "ゔぃ")
-	tree.putValue([]rune("vu"), "ゔ")
-	tree.putValue([]rune("ve"), "ゔぇ")
-	tree.putValue([]rune("vo"), "ゔぉ")
+func addBasicKunreiToRTKTree(treeMap *tree.Map) {
+	treeMap.PutValue([]rune("a"), "あ")
+	treeMap.PutValue([]rune("i"), "い")
+	treeMap.PutValue([]rune("u"), "う")
+	treeMap.PutValue([]rune("e"), "え")
+	treeMap.PutValue([]rune("o"), "お")
+	treeMap.PutValue([]rune("ka"), "か")
+	treeMap.PutValue([]rune("ki"), "き")
+	treeMap.PutValue([]rune("ku"), "く")
+	treeMap.PutValue([]rune("ke"), "け")
+	treeMap.PutValue([]rune("ko"), "こ")
+	treeMap.PutValue([]rune("sa"), "さ")
+	treeMap.PutValue([]rune("si"), "し")
+	treeMap.PutValue([]rune("su"), "す")
+	treeMap.PutValue([]rune("se"), "せ")
+	treeMap.PutValue([]rune("so"), "そ")
+	treeMap.PutValue([]rune("ta"), "た")
+	treeMap.PutValue([]rune("ti"), "ち")
+	treeMap.PutValue([]rune("tu"), "つ")
+	treeMap.PutValue([]rune("te"), "て")
+	treeMap.PutValue([]rune("to"), "と")
+	treeMap.PutValue([]rune("na"), "な")
+	treeMap.PutValue([]rune("ni"), "に")
+	treeMap.PutValue([]rune("nu"), "ぬ")
+	treeMap.PutValue([]rune("ne"), "ね")
+	treeMap.PutValue([]rune("no"), "の")
+	treeMap.PutValue([]rune("ha"), "は")
+	treeMap.PutValue([]rune("hi"), "ひ")
+	treeMap.PutValue([]rune("hu"), "ふ")
+	treeMap.PutValue([]rune("he"), "へ")
+	treeMap.PutValue([]rune("ho"), "ほ")
+	treeMap.PutValue([]rune("ma"), "ま")
+	treeMap.PutValue([]rune("mi"), "み")
+	treeMap.PutValue([]rune("mu"), "む")
+	treeMap.PutValue([]rune("me"), "め")
+	treeMap.PutValue([]rune("mo"), "も")
+	treeMap.PutValue([]rune("ya"), "や")
+	treeMap.PutValue([]rune("yu"), "ゆ")
+	treeMap.PutValue([]rune("yo"), "よ")
+	treeMap.PutValue([]rune("ra"), "ら")
+	treeMap.PutValue([]rune("ri"), "り")
+	treeMap.PutValue([]rune("ru"), "る")
+	treeMap.PutValue([]rune("re"), "れ")
+	treeMap.PutValue([]rune("ro"), "ろ")
+	treeMap.PutValue([]rune("wa"), "わ")
+	treeMap.PutValue([]rune("wi"), "ゐ")
+	treeMap.PutValue([]rune("wu"), "う")
+	treeMap.PutValue([]rune("we"), "ゑ")
+	treeMap.PutValue([]rune("wo"), "を")
+	treeMap.PutValue([]rune("ga"), "が")
+	treeMap.PutValue([]rune("gi"), "ぎ")
+	treeMap.PutValue([]rune("gu"), "ぐ")
+	treeMap.PutValue([]rune("ge"), "げ")
+	treeMap.PutValue([]rune("go"), "ご")
+	treeMap.PutValue([]rune("za"), "ざ")
+	treeMap.PutValue([]rune("zi"), "じ")
+	treeMap.PutValue([]rune("zu"), "ず")
+	treeMap.PutValue([]rune("ze"), "ぜ")
+	treeMap.PutValue([]rune("zo"), "ぞ")
+	treeMap.PutValue([]rune("da"), "だ")
+	treeMap.PutValue([]rune("di"), "ぢ")
+	treeMap.PutValue([]rune("du"), "づ")
+	treeMap.PutValue([]rune("de"), "で")
+	treeMap.PutValue([]rune("do"), "ど")
+	treeMap.PutValue([]rune("ba"), "ば")
+	treeMap.PutValue([]rune("bi"), "び")
+	treeMap.PutValue([]rune("bu"), "ぶ")
+	treeMap.PutValue([]rune("be"), "べ")
+	treeMap.PutValue([]rune("bo"), "ぼ")
+	treeMap.PutValue([]rune("pa"), "ぱ")
+	treeMap.PutValue([]rune("pi"), "ぴ")
+	treeMap.PutValue([]rune("pu"), "ぷ")
+	treeMap.PutValue([]rune("pe"), "ぺ")
+	treeMap.PutValue([]rune("po"), "ぽ")
+	treeMap.PutValue([]rune("va"), "ゔぁ")
+	treeMap.PutValue([]rune("vi"), "ゔぃ")
+	treeMap.PutValue([]rune("vu"), "ゔ")
+	treeMap.PutValue([]rune("ve"), "ゔぇ")
+	treeMap.PutValue([]rune("vo"), "ゔぉ")
 }
 
-func addSpecialSymbolsToRTKTree(tree *node) {
-	tree.putValue([]rune{'.'}, "。")
-	tree.putValue([]rune{','}, "、")
-	tree.putValue([]rune{':'}, "：")
-	tree.putValue([]rune{'/'}, "・")
-	tree.putValue([]rune{'!'}, "！")
-	tree.putValue([]rune{'?'}, "？")
-	tree.putValue([]rune{'~'}, "〜")
-	tree.putValue([]rune{'-'}, "ー")
-	tree.putValue([]rune{'‘'}, "「")
-	tree.putValue([]rune{'’'}, "」")
-	tree.putValue([]rune{'“'}, "『")
-	tree.putValue([]rune{'”'}, "』")
-	tree.putValue([]rune{'['}, "［")
-	tree.putValue([]rune{']'}, "］")
-	tree.putValue([]rune{'('}, "（")
-	tree.putValue([]rune{')'}, "）")
-	tree.putValue([]rune{'{'}, "｛")
-	tree.putValue([]rune{'}'}, "｝")
+func addSpecialSymbolsToRTKTree(treeMap *tree.Map) {
+	treeMap.PutValue([]rune{'.'}, "。")
+	treeMap.PutValue([]rune{','}, "、")
+	treeMap.PutValue([]rune{':'}, "：")
+	treeMap.PutValue([]rune{'/'}, "・")
+	treeMap.PutValue([]rune{'!'}, "！")
+	treeMap.PutValue([]rune{'?'}, "？")
+	treeMap.PutValue([]rune{'~'}, "〜")
+	treeMap.PutValue([]rune{'-'}, "ー")
+	treeMap.PutValue([]rune{'‘'}, "「")
+	treeMap.PutValue([]rune{'’'}, "」")
+	treeMap.PutValue([]rune{'“'}, "『")
+	treeMap.PutValue([]rune{'”'}, "』")
+	treeMap.PutValue([]rune{'['}, "［")
+	treeMap.PutValue([]rune{']'}, "］")
+	treeMap.PutValue([]rune{'('}, "（")
+	treeMap.PutValue([]rune{')'}, "）")
+	treeMap.PutValue([]rune{'{'}, "｛")
+	treeMap.PutValue([]rune{'}'}, "｝")
 }
 
 func mergeMaps(maps ...map[string]rune) map[string]rune {
@@ -331,15 +333,24 @@ func mergeMaps(maps ...map[string]rune) map[string]rune {
 	return result
 }
 
-func imeModeTree(tree *node) *node {
+func imeModeTree(treeMap *tree.Map) *tree.Map {
 
-	if tree == nil {
+	if treeMap == nil {
 		return nil
 	}
 
-	treeCopy := tree.copy()
-	treeCopy.putValue([]rune("nn"), "ん")
-	treeCopy.putValue([]rune("n "), "ん")
+	treeCopy := treeMap.Copy()
+	treeCopy.PutValue([]rune("nn"), "ん")
+	treeCopy.PutValue([]rune("n "), "ん")
 
 	return treeCopy
+}
+
+func useObsoleteKana(treeMap *tree.Map) *tree.Map {
+
+	treeMapCopy := treeMap.Copy()
+	treeMapCopy.PutValue([]rune("wi"), "ゐ")
+	treeMapCopy.PutValue([]rune("we"), "ゑ")
+
+	return treeMap
 }
