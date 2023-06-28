@@ -1,8 +1,13 @@
 package tree
 
 type Map struct {
-	value    *string
+	Value    *string
 	branches map[rune]*Map
+}
+
+// Map is an alias for PutValue and exists to satisfy an interface requirement in the public API.
+func (m *Map) Map(key string, value string) {
+	m.PutValue([]rune(key), value)
 }
 
 // PutValue inserts a key/value pair into the tree, each of the key's runes
@@ -23,7 +28,7 @@ func (m *Map) PutValue(key []rune, value string) {
 	}
 
 	if len(key) == 1 {
-		targetMap.value = &value
+		targetMap.Value = &value
 	} else {
 		targetMap.PutValue(key[1:], value)
 	}
@@ -66,8 +71,8 @@ func (m *Map) GetValue(key string) string {
 	}
 
 	if len(key) == 1 {
-		if targetMap.value != nil {
-			return *targetMap.value
+		if targetMap.Value != nil {
+			return *targetMap.Value
 		}
 
 		return ""
@@ -109,7 +114,7 @@ func (n *Map) Copy() *Map {
 	}
 
 	return &Map{
-		value:    n.value,
+		Value:    n.Value,
 		branches: branches,
 	}
 }

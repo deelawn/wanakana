@@ -6,12 +6,12 @@ import (
 
 func TestMapify(t *testing.T) {
 
-	tree := createRomajiToKanaTree()
-	tree = imeModeTree(tree)
+	treeMap := createRomajiToKanaTree()
+	treeMap = ToIMEModeTree(treeMap)
 
 	// Verify all expecteRTKMappings are in the tree.
 	for k, v := range expecteRTKMappings {
-		if tv := tree.getValue(k); tv != v {
+		if tv := treeMap.GetValue(k); tv != v {
 			t.Errorf("Expected %s to have value of %s, got %s", k, v, tv)
 		}
 	}

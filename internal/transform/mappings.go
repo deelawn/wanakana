@@ -123,7 +123,7 @@ var (
 	rtkTreeMapMu sync.Mutex
 )
 
-func getRomajiToKanaTree() *tree.Map {
+func GetRomajiToKanaTree() *tree.Map {
 
 	rtkTreeMapMu.Lock()
 	defer rtkTreeMapMu.Unlock()
@@ -333,7 +333,7 @@ func mergeMaps(maps ...map[string]rune) map[string]rune {
 	return result
 }
 
-func imeModeTree(treeMap *tree.Map) *tree.Map {
+func ToIMEModeTree(treeMap *tree.Map) *tree.Map {
 
 	if treeMap == nil {
 		return nil
@@ -346,7 +346,7 @@ func imeModeTree(treeMap *tree.Map) *tree.Map {
 	return treeCopy
 }
 
-func useObsoleteKana(treeMap *tree.Map) *tree.Map {
+func ToTreeWithObsoleteKana(treeMap *tree.Map) *tree.Map {
 
 	treeMapCopy := treeMap.Copy()
 	treeMapCopy.PutValue([]rune("wi"), "ゐ")

@@ -17,7 +17,8 @@ type Options struct {
 	UppercaseKatakana bool
 	// Romanization determines the romanization to use when converting to/from romaji.
 	Romanization Romanization
-
-	// IMEMode doens't apply for this port to Go.
-	// IMEMode bool
+	// IMEMode determines whether to use IME mode.
+	IMEMode bool
+	// CustomKanaMapping is a custom mapping to use when converting to/from romaji.
+	CustomKanaMapping CustomMapping
 }
