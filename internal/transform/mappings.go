@@ -186,15 +186,16 @@ func createRomajiToKanaTree() *tree.Map {
 	}
 
 	// Add the little tsu when typing two of the same consonant.
-	for roma, kana := range rtkConsonants {
-		treeMap.PutValue([]rune{roma, roma}, "っ"+string(kana))
+	for roma := range rtkConsonants {
+		treeMap.PutValue([]rune{roma, roma}, "っ")
 	}
 
 	// And do the same for these letters as well.
-	treeMap.PutValue([]rune{'c', 'c'}, "っc")
-	treeMap.PutValue([]rune{'y', 'y'}, "っy")
-	treeMap.PutValue([]rune{'w', 'w'}, "っw")
-	treeMap.PutValue([]rune{'j', 'j'}, "っj")
+	treeMap.PutValue([]rune{'c', 'c'}, "っ")
+	treeMap.PutValue([]rune{'y', 'y'}, "っ")
+	treeMap.PutValue([]rune{'w', 'w'}, "っ")
+	treeMap.PutValue([]rune{'j', 'j'}, "っ")
+	treeMap.PutValue([]rune{'t', 't'}, "っ")
 
 	return treeMap
 }
@@ -339,11 +340,11 @@ func ToIMEModeTree(treeMap *tree.Map) *tree.Map {
 		return nil
 	}
 
-	treeCopy := treeMap.Copy()
-	treeCopy.PutValue([]rune("nn"), "ん")
-	treeCopy.PutValue([]rune("n "), "ん")
+	treeMapCopy := treeMap.Copy()
+	treeMapCopy.PutValue([]rune("nn"), "ん")
+	treeMapCopy.PutValue([]rune("n "), "ん")
 
-	return treeCopy
+	return treeMapCopy
 }
 
 func ToTreeWithObsoleteKana(treeMap *tree.Map) *tree.Map {
@@ -352,5 +353,5 @@ func ToTreeWithObsoleteKana(treeMap *tree.Map) *tree.Map {
 	treeMapCopy.PutValue([]rune("wi"), "ゐ")
 	treeMapCopy.PutValue([]rune("we"), "ゑ")
 
-	return treeMap
+	return treeMapCopy
 }

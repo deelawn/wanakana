@@ -110,6 +110,8 @@ type ConvertedKanaToken struct {
 
 func ToKanaToken(input []rune, treeMap *tree.Map, convertEnding bool) (result []ConvertedKanaToken) {
 
+	// TODO: Figure out how convertEnding is supposed to work.
+
 	if treeMap == nil {
 		return
 	}
@@ -140,6 +142,21 @@ func ToKanaToken(input []rune, treeMap *tree.Map, convertEnding bool) (result []
 
 		// Subtract one because the loop increases by one each iteration.
 		i = nextConvertedToken.End - 1
+
+		// The last two characters of input would have been a duplicate such as "tt", so if
+		// the full string was "hattsu", then we need to process the second "t" again because
+		// it is part of the next token.
+		if nextConvertedToken.Value == "っ" && nextConvertedToken.End-nextConvertedToken.Start == 2 &&
+			input[nextConvertedToken.Start] == input[nextConvertedToken.Start+1] {
+			i--
+		}
+
+		// // The last two characters of input would have been a duplicate such as "tt", so if
+		// // the full string was "hattsu", then we need to process the second "t" again because
+		// // it is part of the next token.
+		// if nextConvertedToken.Value == "っ" {
+		// 	i--
+		// }
 	}
 
 	return result

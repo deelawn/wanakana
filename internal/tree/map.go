@@ -2,7 +2,7 @@ package tree
 
 type Map struct {
 	Value    *string
-	branches map[rune]*Map
+	Branches map[rune]*Map
 }
 
 // Map is an alias for PutValue and exists to satisfy an interface requirement in the public API.
@@ -18,12 +18,12 @@ func (m *Map) PutValue(key []rune, value string) {
 		return
 	}
 
-	if m.branches == nil {
-		m.branches = make(map[rune]*Map)
+	if m.Branches == nil {
+		m.Branches = make(map[rune]*Map)
 	}
 
 	targetMap := new(Map)
-	if existingMap, ok := m.branches[key[0]]; ok {
+	if existingMap, ok := m.Branches[key[0]]; ok {
 		targetMap = existingMap
 	}
 
@@ -33,7 +33,7 @@ func (m *Map) PutValue(key []rune, value string) {
 		targetMap.PutValue(key[1:], value)
 	}
 
-	m.branches[key[0]] = targetMap
+	m.Branches[key[0]] = targetMap
 }
 
 func (m *Map) PutMap(key []rune, newMap *Map) {
@@ -42,21 +42,21 @@ func (m *Map) PutMap(key []rune, newMap *Map) {
 		return
 	}
 
-	if m.branches == nil {
-		m.branches = make(map[rune]*Map)
+	if m.Branches == nil {
+		m.Branches = make(map[rune]*Map)
 	}
 
 	if len(key) == 1 {
-		m.branches[key[0]] = newMap
+		m.Branches[key[0]] = newMap
 		return
 	}
 
-	m.branches[key[0]].PutMap(key[1:], newMap)
+	m.Branches[key[0]].PutMap(key[1:], newMap)
 }
 
 func (m *Map) GetValue(key string) string {
 
-	if m == nil || len(key) == 0 || m.branches == nil {
+	if m == nil || len(key) == 0 || m.Branches == nil {
 		return ""
 	}
 
@@ -66,7 +66,7 @@ func (m *Map) GetValue(key string) string {
 		targetMap *Map
 		ok        bool
 	)
-	if targetMap, ok = m.branches[keyRunes[0]]; !ok {
+	if targetMap, ok = m.Branches[keyRunes[0]]; !ok {
 		return ""
 	}
 
@@ -83,7 +83,7 @@ func (m *Map) GetValue(key string) string {
 
 func (m *Map) GetMap(key []rune) *Map {
 
-	if m == nil || len(key) == 0 || m.branches == nil {
+	if m == nil || len(key) == 0 || m.Branches == nil {
 		return nil
 	}
 
@@ -91,7 +91,7 @@ func (m *Map) GetMap(key []rune) *Map {
 		targetMap *Map
 		ok        bool
 	)
-	if targetMap, ok = m.branches[key[0]]; !ok {
+	if targetMap, ok = m.Branches[key[0]]; !ok {
 		return nil
 	}
 
@@ -109,12 +109,29 @@ func (n *Map) Copy() *Map {
 	}
 
 	branches := make(map[rune]*Map)
-	for k, v := range n.branches {
+	for k, v := range n.Branches {
 		branches[k] = v.Copy()
 	}
 
 	return &Map{
 		Value:    n.Value,
-		branches: branches,
+		Branches: branches,
+	}
+}
+
+func (m *Map) PrependToLeaves(s string) {
+
+	if len(m.Branches) == 0 {
+		value := new(string)
+		if m.Value != nil {
+			value = m.Value
+		}
+
+		*value = s + *value
+		return
+	}
+
+	for _, mm := range m.Branches {
+		mm.PrependToLeaves(s)
 	}
 }

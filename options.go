@@ -6,6 +6,14 @@ const (
 	RomanizationHepburn Romanization = "hepburn"
 )
 
+type ToKanaMethod int
+
+const (
+	ToKanaMethodNone ToKanaMethod = iota
+	ToKanaMethodHiragana
+	ToKanaMethodKatakana
+)
+
 type Options struct {
 	// UseObsoleteKana determines whether to use obsolete characters such as ゐ and ゑ.
 	UseObsoleteKana bool
@@ -17,8 +25,8 @@ type Options struct {
 	UppercaseKatakana bool
 	// Romanization determines the romanization to use when converting to/from romaji.
 	Romanization Romanization
-	// IMEMode determines whether to use IME mode.
-	IMEMode bool
+	// IMEMode determines whether to use IME mode as well as the to kana method
+	IMEMode ToKanaMethod
 	// CustomKanaMapping is a custom mapping to use when converting to/from romaji.
 	CustomKanaMapping CustomMapping
 }

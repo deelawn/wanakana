@@ -31,20 +31,30 @@ func ToKana(input string, options Options, treeMap *tree.Map) string {
 		treeMap = createRomajiToKanaTree(options.IMEMode, options.UseObsoleteKana, options.CustomKanaMapping)
 	}
 
-	tokens := transform.ToKanaToken([]rune(strings.ToLower(input)), treeMap, false)
+	tokens := transform.ToKanaToken([]rune(strings.ToLower(input)), treeMap, !(options.IMEMode == ToKanaMethodNone))
 
 	var result string
 	for _, token := range tokens {
-		result += token.Value
+		enforceHiragana := options.IMEMode == ToKanaMethodHiragana
+		// Katakana preference can be delineated by making an intended token all uppercase.
+		enforceKatakana := options.IMEMode == ToKanaMethodKatakana ||
+			strings.ToUpper(string(input[token.Start:token.End])) == string(input[token.Start:token.End])
+
+		if enforceHiragana || !enforceKatakana {
+			result += token.Value
+			continue
+		}
+
+		result += string(transform.HiraganaToKatakana([]rune(token.Value)))
 	}
 
 	return result
 }
 
-func createRomajiToKanaTree(imeMode, useObsoleteKana bool, customKanaMapping CustomMapping) *tree.Map {
+func createRomajiToKanaTree(imeMode ToKanaMethod, useObsoleteKana bool, customKanaMapping CustomMapping) *tree.Map {
 
 	treeMap := transform.GetRomajiToKanaTree()
-	if imeMode {
+	if imeMode != ToKanaMethodNone {
 		treeMap = transform.ToIMEModeTree(treeMap)
 	}
 	if useObsoleteKana {
@@ -52,6 +62,7 @@ func createRomajiToKanaTree(imeMode, useObsoleteKana bool, customKanaMapping Cus
 	}
 
 	if customKanaMapping != nil {
+		treeMap = treeMap.Copy()
 		customKanaMapping.Apply(treeMap)
 	}
 
