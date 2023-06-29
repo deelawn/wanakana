@@ -1,26 +1,29 @@
 package codepoints
 
 const (
-	LatinLowercaseStart = 0x61
-	LatinLowercaseEnd   = 0x7a
-	LatinUppercaseStart = 0x41
-	LatinUppercaseEnd   = 0x5a
+	LatinLowercaseStart rune = 0x61
+	LatinLowercaseEnd   rune = 0x7a
+	LatinUppercaseStart rune = 0x41
+	LatinUppercaseEnd   rune = 0x5a
 
-	LowercaseZenkakuStart = 0xff41
-	LowercaseZenkakuEnd   = 0xff5a
-	UppercaseZenkakuStart = 0xff21
-	UppercaseZenkakuEnd   = 0xff3a
+	LowercaseZenkakuStart rune = 0xff41
+	LowercaseZenkakuEnd   rune = 0xff5a
+	UppercaseZenkakuStart rune = 0xff21
+	UppercaseZenkakuEnd   rune = 0xff3a
 
-	HiraganaStart = 0x3041
-	HiraganaEnd   = 0x3096
-	KatakanaStart = 0x30a1
-	KatakanaEnd   = 0x30fc
+	HiraganaStart rune = 0x3041
+	HiraganaEnd   rune = 0x3096
+	KatakanaStart rune = 0x30a1
+	KatakanaEnd   rune = 0x30fc
 
-	KanjiStart = 0x4e00
-	KanjiEnd   = 0x9faf
+	KanjiStart rune = 0x4e00
+	KanjiEnd   rune = 0x9faf
 
-	ProlongedSoundMark = 0x30fc
-	KanaSlashDot       = 0x30fb
+	ProlongedSoundMark rune = 0x30fc
+	KanaSlashDot       rune = 0x30fb
+
+	Space            rune = 0x20
+	IdeographicSpace rune = 0x3000
 )
 
 type Range [2]rune

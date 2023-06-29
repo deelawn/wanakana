@@ -2,18 +2,19 @@ package wanakana
 
 import "github.com/deelawn/wanakana/internal/character"
 
+// IsMixed returns true if string contains both kana and romaji.
 func IsMixed(s string, passKanji bool) bool {
 
 	if len(s) == 0 {
 		return false
 	}
 
-	var hasKanji, hasHiragana, hasKatakana, hasRomaji bool
+	var hasHiragana, hasKatakana, hasRomaji bool
 	for _, r := range []rune(s) {
 
 		// Check if this character is a kanji character if `passKanji` is set and we haven't previously
 		// identified a kanji character.
-		if !passKanji && !hasKanji {
+		if !passKanji {
 			if character.IsKanji(r) {
 				return false
 			}

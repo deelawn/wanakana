@@ -1,6 +1,11 @@
 package wanakana
 
-import "github.com/deelawn/wanakana/internal/character"
+import (
+	"strings"
+
+	"github.com/deelawn/wanakana/internal/character"
+	"github.com/deelawn/wanakana/internal/transform"
+)
 
 func IsKatakana(s string) bool {
 
@@ -15,4 +20,21 @@ func IsKatakana(s string) bool {
 	}
 
 	return true
+}
+
+func ToKatakana(input string, options Options) string {
+
+	if len(input) == 0 {
+		return ""
+	}
+
+	if options.PassRomaji {
+		return string(transform.HiraganaToKatakana([]rune(input)))
+	}
+
+	if IsMixed(input, true) || IsRomaji(input, nil) || hasEnglishPunctuation(input) {
+		input = ToKana(strings.ToLower(input), options, nil)
+	}
+
+	return string(transform.HiraganaToKatakana([]rune(input)))
 }

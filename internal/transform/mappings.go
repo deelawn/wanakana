@@ -4,6 +4,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/deelawn/wanakana/internal/codepoints"
 	"github.com/deelawn/wanakana/internal/tree"
 )
 
@@ -320,6 +321,7 @@ func addSpecialSymbolsToRTKTree(treeMap *tree.Map) {
 	treeMap.PutValue([]rune{')'}, "）")
 	treeMap.PutValue([]rune{'{'}, "｛")
 	treeMap.PutValue([]rune{'}'}, "｝")
+	treeMap.PutValue([]rune{codepoints.Space}, string(codepoints.IdeographicSpace))
 }
 
 func mergeMaps(maps ...map[string]rune) map[string]rune {
