@@ -65,12 +65,12 @@ func TestToKana(t *testing.T) {
 		{
 			name:     "hiragana katakana",
 			input:    "onaji BUTTSUUJI",
-			expected: "おなじ　ブッツウジ",
+			expected: "おなじ ブッツウジ",
 		},
 		{
 			name:     "katakana hiragana",
 			input:    "ONAJI buttsuuji",
-			expected: "オナジ　ぶっつうじ",
+			expected: "オナジ ぶっつうじ",
 		},
 		{
 			name:     "mixed with kanji",

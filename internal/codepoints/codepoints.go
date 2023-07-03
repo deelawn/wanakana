@@ -21,9 +21,6 @@ const (
 
 	ProlongedSoundMark rune = 0x30fc
 	KanaSlashDot       rune = 0x30fb
-
-	Space            rune = 0x20
-	IdeographicSpace rune = 0x3000
 )
 
 type Range [2]rune

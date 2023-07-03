@@ -59,7 +59,7 @@ func TestToKatakana(t *testing.T) {
 		{
 			name:     "romaji hiragana",
 			input:    "toukyou, おおさか",
-			expected: "トウキョウ、　オオサカ",
+			expected: "トウキョウ、 オオサカ",
 		},
 		{
 			name:     "pass romaji with hiragana",
