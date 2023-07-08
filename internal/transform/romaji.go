@@ -129,13 +129,13 @@ func GetRomajiToKanaTree() *tree.Map {
 	defer rtkTreeMapMu.Unlock()
 
 	if rtkTreeMap == nil {
-		rtkTreeMap = createRomajiToKanaTree()
+		rtkTreeMap = createRomajiToKanaTreeMap()
 	}
 
 	return rtkTreeMap
 }
 
-func createRomajiToKanaTree() *tree.Map {
+func createRomajiToKanaTreeMap() *tree.Map {
 
 	treeMap := new(tree.Map)
 
@@ -312,8 +312,14 @@ func addSpecialSymbolsToRTKTree(treeMap *tree.Map) {
 	treeMap.PutValue([]rune{'-'}, "ー")
 	treeMap.PutValue([]rune{'‘'}, "「")
 	treeMap.PutValue([]rune{'’'}, "」")
+	// Normal, non-stylized single quotes. This uses the hex value because
+	// a single quote can't be types as a rune literal.
+	treeMap.PutValue([]rune{0x27}, "「")
+	treeMap.PutValue([]rune{0x27}, "」")
 	treeMap.PutValue([]rune{'“'}, "『")
 	treeMap.PutValue([]rune{'”'}, "』")
+	treeMap.PutValue([]rune{'"'}, "『")
+	treeMap.PutValue([]rune{'"'}, "』")
 	treeMap.PutValue([]rune{'['}, "［")
 	treeMap.PutValue([]rune{']'}, "］")
 	treeMap.PutValue([]rune{'('}, "（")

@@ -6,7 +6,7 @@ import (
 
 func TestMapify(t *testing.T) {
 
-	treeMap := createRomajiToKanaTree()
+	treeMap := createRomajiToKanaTreeMap()
 	treeMap = ToIMEModeTree(treeMap)
 
 	// Verify all expecteRTKMappings are in the tree.

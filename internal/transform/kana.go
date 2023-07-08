@@ -1,9 +1,17 @@
 package transform
 
-import "github.com/deelawn/wanakana/internal/tree"
+import (
+	"sync"
+
+	"github.com/deelawn/wanakana/internal/tree"
+)
+
+const romanizationHepburn string = "hepburn"
+
+// KTR = kana to romaji
 
 var (
-	basicKanaToRomajiMapping = map[string]string{
+	basicKTRMapping = map[string]string{
 		"あ": "a", "い": "i", "う": "u", "え": "e", "お": "o",
 		"か": "ka", "き": "ki", "く": "ku", "け": "ke", "こ": "ko",
 		"さ": "sa", "し": "shi", "す": "su", "せ": "se", "そ": "so",
@@ -23,7 +31,7 @@ var (
 		"ゔぁ": "va", "ゔぃ": "vi", "ゔ": "vu", "ゔぇ": "ve", "ゔぉ": "vo",
 	}
 
-	kanaToRomajiSpecialSymbolsMapping = map[rune]rune{
+	ktrSpecialSymbolsMapping = map[rune]rune{
 		'。': '.',
 		'、': ',',
 		'：': ':',
@@ -45,10 +53,10 @@ var (
 		'　': ' ',
 	}
 
-	ambiguousVowels = []rune{'あ', 'い', 'う', 'え', 'お', 'や', 'ゆ', 'よ'}
-	smallY          = map[rune]string{'ゃ': "ya", 'ゅ': "yu", 'ょ': "yo"}
-	smallYExtra     = map[rune]string{'ぃ': "yi", 'ぇ': "ye"}
-	smallAIUEO      = map[rune]rune{
+	ktrAmbiguousVowels = []rune{'あ', 'い', 'う', 'え', 'お', 'や', 'ゆ', 'よ'}
+	ktrSmallY          = map[rune]string{'ゃ': "ya", 'ゅ': "yu", 'ょ': "yo"}
+	ktrSmallYExtra     = map[rune]string{'ぃ': "yi", 'ぇ': "ye"}
+	ktrSmallAIUEO      = map[rune]rune{
 		'ぁ': 'a',
 		'ぃ': 'i',
 		'ぅ': 'u',
@@ -56,15 +64,15 @@ var (
 		'ぉ': 'o',
 	}
 
-	yoonKana       = []rune{'き', 'に', 'ひ', 'み', 'り', 'ぎ', 'び', 'ぴ', 'ゔ', 'く', 'ふ'}
-	yoonExceptions = map[rune]string{
+	ktrYoonKana       = []rune{'き', 'に', 'ひ', 'み', 'り', 'ぎ', 'び', 'ぴ', 'ゔ', 'く', 'ふ'}
+	ktrYoonExceptions = map[rune]string{
 		'し': "sh",
 		'ち': "ch",
 		'じ': "j",
 		'ぢ': "j",
 	}
 
-	smallKana = map[rune]string{
+	ktrSmallKana = map[rune]string{
 		'っ': "",
 		'ゃ': "ya",
 		'ゅ': "yu",
@@ -101,6 +109,111 @@ var (
 		'z': 'z',
 	}
 )
+
+var (
+	ktrTreeMap   *tree.Map
+	ktrTreeMapMu sync.Mutex
+)
+
+func GetKanaToRomajiTreeMap(romanization string) *tree.Map {
+
+	ktrTreeMapMu.Lock()
+	defer ktrTreeMapMu.Unlock()
+
+	if ktrTreeMap == nil {
+		ktrTreeMap = createKanaToRomajiTreeMap(romanization)
+	}
+
+	return ktrTreeMap
+}
+
+func createKanaToRomajiTreeMap(romanization string) *tree.Map {
+
+	// They are requesting an unsupported romanization system.
+	if romanization != romanizationHepburn && romanization != "" {
+		return nil
+	}
+
+	treeMap := new(tree.Map)
+	for kana, romaji := range basicKTRMapping {
+		treeMap.PutValue([]rune(kana), romaji)
+	}
+
+	for kana, romaji := range ktrSpecialSymbolsMapping {
+		treeMap.PutValue([]rune{kana}, string(romaji))
+	}
+
+	for kana, romaji := range ktrSmallY {
+		treeMap.PutValue([]rune{kana}, romaji)
+	}
+
+	for kana, romaji := range ktrSmallAIUEO {
+		treeMap.PutValue([]rune{kana}, string(romaji))
+	}
+
+	for _, kana := range ktrYoonKana {
+
+		// Get the first romaji character that corresponds to the kana that already exists in the tree.
+		kanaMapping := treeMap.GetValue(string(kana))
+		if kanaMappingRunes := []rune(kanaMapping); len(kanaMappingRunes) > 0 {
+			kanaMapping = string(kanaMappingRunes[0])
+		}
+
+		// Add entries to the tree for that existing first character plus the small y kana.
+		for yKana, yRomaji := range ktrSmallY {
+			treeMap.PutValue([]rune{kana, yKana}, kanaMapping+yRomaji)
+		}
+
+		for yKana, yRomaji := range ktrSmallYExtra {
+			treeMap.PutValue([]rune{kana, yKana}, kanaMapping+yRomaji)
+		}
+	}
+
+	for kana, romaji := range ktrYoonExceptions {
+		for yKana, yRomaji := range ktrSmallY {
+			treeMap.PutValue([]rune{kana, yKana}, romaji+yRomaji[1:])
+		}
+
+		treeMap.PutValue([]rune{kana, 'ぃ'}, romaji+"yi")
+		treeMap.PutValue([]rune{kana, 'ぇ'}, romaji+"e")
+	}
+
+	treeMap.Branches['っ'] = resolveTsu(treeMap)
+
+	for kana, romaji := range ktrSmallKana {
+		treeMap.PutValue([]rune{kana}, romaji)
+	}
+
+	for _, vowel := range ktrAmbiguousVowels {
+		treeMap.PutValue([]rune{'ん', vowel}, "n"+treeMap.GetValue(string(vowel)))
+	}
+
+	return treeMap
+}
+
+func resolveTsu(treeMap *tree.Map) *tree.Map {
+
+	newTreeMap := new(tree.Map)
+	if treeMap.Branches == nil {
+		if treeMap.Value == nil {
+			return nil
+		}
+
+		consonant := rune((*treeMap.Value)[0])
+		if sokuon, ok := sokuonWhitelist[consonant]; ok {
+			newValue := string(sokuon) + *treeMap.Value
+			newTreeMap.Value = &newValue
+			return newTreeMap
+		}
+	}
+
+	newTreeMap.Branches = make(map[rune]*tree.Map)
+	for k, v := range treeMap.Branches {
+		newTreeMap.Branches[k] = resolveTsu(v)
+	}
+
+	return newTreeMap
+}
 
 type ConvertedKanaToken struct {
 	Start int

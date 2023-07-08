@@ -57,3 +57,61 @@ func TestIsRomaji(t *testing.T) {
 		})
 	}
 }
+
+func TestToRomaji(t *testing.T) {
+
+	var tests = []struct {
+		name     string
+		input    string
+		options  wanakana.Options
+		expected string
+	}{
+		{
+			name: "empty string",
+		},
+		{
+			name:     "hiragana katakana",
+			input:    "ひらがな　カタカナ",
+			expected: "hiragana katakana",
+		},
+		{
+			name:     "hiragana katakana with long dashes",
+			input:    "げーむ　ゲーム",
+			expected: "ge-mu geemu",
+		},
+		{
+			name:     "upcase katakana",
+			input:    "ひらがな　カタカナ",
+			options:  wanakana.Options{UppercaseKatakana: true},
+			expected: "hiragana KATAKANA",
+		},
+		{
+			name:  "custom mapping",
+			input: "つじぎり",
+			options: wanakana.Options{
+				CustomKanaMapping: wanakana.NewCustomMappingKeyValue(
+					map[string]string{
+						"じ": "zi",
+						"つ": "tu",
+						"り": "li",
+					},
+				),
+			},
+			expected: "tuzigili",
+		},
+		{
+			name:     "osaka",
+			input:    "オーサカ おおさか オオサカ",
+			expected: "oosaka oosaka oosaka",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			actual := wanakana.ToRomaji(tt.input, tt.options, nil)
+			if actual != tt.expected {
+				t.Errorf("wanted %s, got %s", tt.expected, actual)
+			}
+		})
+	}
+}

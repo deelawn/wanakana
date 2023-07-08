@@ -27,6 +27,9 @@ func IsKana(s string) bool {
 
 func ToKana(input string, options Options, treeMap *tree.Map) string {
 
+	// TODO:
+	// treemap can't be an internal type if it is being used as input.
+	// Or use an interface instead.
 	if treeMap == nil {
 		treeMap = createRomajiToKanaTree(options.IMEMode, options.UseObsoleteKana, options.CustomKanaMapping)
 	}

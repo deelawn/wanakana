@@ -70,7 +70,7 @@ func (m *Map) GetValue(key string) string {
 		return ""
 	}
 
-	if len(key) == 1 {
+	if len(keyRunes) == 1 {
 		if targetMap.Value != nil {
 			return *targetMap.Value
 		}
