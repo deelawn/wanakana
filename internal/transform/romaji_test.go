@@ -11,7 +11,7 @@ func TestMapify(t *testing.T) {
 
 	// Verify all expecteRTKMappings are in the tree.
 	for k, v := range expecteRTKMappings {
-		if tv := treeMap.GetValue(k); tv != v {
+		if tv := treeMap.GetValue([]rune(k)); tv != v {
 			t.Errorf("Expected %s to have value of %s, got %s", k, v, tv)
 		}
 	}

@@ -154,7 +154,7 @@ func createKanaToRomajiTreeMap(romanization string) *tree.Map {
 	for _, kana := range ktrYoonKana {
 
 		// Get the first romaji character that corresponds to the kana that already exists in the tree.
-		kanaMapping := treeMap.GetValue(string(kana))
+		kanaMapping := treeMap.GetValue([]rune{kana})
 		if kanaMappingRunes := []rune(kanaMapping); len(kanaMappingRunes) > 0 {
 			kanaMapping = string(kanaMappingRunes[0])
 		}
@@ -185,7 +185,7 @@ func createKanaToRomajiTreeMap(romanization string) *tree.Map {
 	}
 
 	for _, vowel := range ktrAmbiguousVowels {
-		treeMap.PutValue([]rune{'ん', vowel}, "n"+treeMap.GetValue(string(vowel)))
+		treeMap.PutValue([]rune{'ん', vowel}, "n"+treeMap.GetValue([]rune{vowel}))
 	}
 
 	return treeMap

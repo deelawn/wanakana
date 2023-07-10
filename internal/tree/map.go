@@ -1,5 +1,6 @@
 package tree
 
+// Map is a tree structure that maps sequences of runes to strings.
 type Map struct {
 	Value    *string
 	Branches map[rune]*Map
@@ -54,23 +55,21 @@ func (m *Map) PutMap(key []rune, newMap *Map) {
 	m.Branches[key[0]].PutMap(key[1:], newMap)
 }
 
-func (m *Map) GetValue(key string) string {
+func (m *Map) GetValue(key []rune) string {
 
 	if m == nil || len(key) == 0 || m.Branches == nil {
 		return ""
 	}
 
-	keyRunes := []rune(key)
-
 	var (
 		targetMap *Map
 		ok        bool
 	)
-	if targetMap, ok = m.Branches[keyRunes[0]]; !ok {
+	if targetMap, ok = m.Branches[key[0]]; !ok {
 		return ""
 	}
 
-	if len(keyRunes) == 1 {
+	if len(key) == 1 {
 		if targetMap.Value != nil {
 			return *targetMap.Value
 		}
@@ -116,22 +115,5 @@ func (n *Map) Copy() *Map {
 	return &Map{
 		Value:    n.Value,
 		Branches: branches,
-	}
-}
-
-func (m *Map) PrependToLeaves(s string) {
-
-	if len(m.Branches) == 0 {
-		value := new(string)
-		if m.Value != nil {
-			value = m.Value
-		}
-
-		*value = s + *value
-		return
-	}
-
-	for _, mm := range m.Branches {
-		mm.PrependToLeaves(s)
 	}
 }

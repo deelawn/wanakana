@@ -37,7 +37,7 @@ func KatakanaToHiragana(s string, treeMap *tree.Map, isDestinationRomaji, conver
 		}
 
 		if convertLongVowelMark && previousKana != 0 && isCharInnerLongDash(r, i) {
-			previousKanaRomaji := treeMap.GetValue(string(previousKana))
+			previousKanaRomaji := treeMap.GetValue([]rune(string(previousKana)))
 			romajiVowel := rune(previousKanaRomaji[len(previousKanaRomaji)-1])
 
 			if character.IsKatakana(runes[i-1]) && romajiVowel == 'o' && isDestinationRomaji {
