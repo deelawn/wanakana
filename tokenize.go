@@ -7,6 +7,7 @@ import (
 	"github.com/deelawn/wanakana/internal/character"
 )
 
+// TokenType indicates the type of token produced by calling Tokenize.
 type TokenType string
 
 const (
@@ -102,6 +103,7 @@ func getTokenType(r rune, compact bool) TokenType {
 	return TokenTypeOther
 }
 
+// Token represents a token produced by calling Tokenize.
 type Token struct {
 	Type  TokenType
 	Value string
@@ -116,8 +118,8 @@ func newToken(tokenType TokenType, value string, detailed bool) Token {
 	return Token{Value: value}
 }
 
-// String returns the string representation of a Token the same way as it is done
-// in the javascript implementation.
+// String returns the string representation of a Token as a JSON object with two string fields:
+// `type` and `value`. This is the same way it is done in the original javaScript implementation.
 func (t Token) String() string {
 
 	if t.Type == "" {
@@ -127,23 +129,12 @@ func (t Token) String() string {
 	return fmt.Sprintf(`{ type: '%s', value: '%s' }`, t.Type, t.Value)
 }
 
-func Tokenize(s string, compact, detailed bool) []Token {
+// Tokenize returns an array of Token objects representing the contents of the input string.
+func Tokenize(input string, compact, detailed bool) []Token {
 
-	if len(s) == 0 {
+	if len(input) == 0 {
 		return []Token{}
 	}
-
-	// runes := []rune(s)
-	// initialChar := runes[0]
-	// prevType := getTokenType(initialChar, compact)
-	// runes = runes[1:]
-
-	// var initialToken Token
-	// if detailed {
-	// 	initialToken = Token{Type: prevType, Value: string(initialChar)}
-	// } else {
-	// 	initialToken = Token{Value: string(initialChar)}
-	// }
 
 	var (
 		newValue string
@@ -151,7 +142,7 @@ func Tokenize(s string, compact, detailed bool) []Token {
 		result   []Token
 	)
 
-	for _, r := range []rune(s) {
+	for _, r := range []rune(input) {
 		currType := getTokenType(r, compact)
 
 		if currType == prevType || prevType == "" {

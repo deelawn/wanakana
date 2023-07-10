@@ -9,13 +9,15 @@ import (
 	"github.com/deelawn/wanakana/tree"
 )
 
-func IsRomaji(s string, regex *regexp.Regexp) bool {
+// IsRomaji returns true if all characters in the string are Romaji or match
+// the optional regular expression.
+func IsRomaji(input string, regex *regexp.Regexp) bool {
 
-	if len(s) == 0 {
+	if len(input) == 0 {
 		return false
 	}
 
-	for _, r := range []rune(s) {
+	for _, r := range []rune(input) {
 		if character.IsRomaji(r) {
 			// This character is Romaji; keep going.
 			continue
@@ -32,6 +34,7 @@ func IsRomaji(s string, regex *regexp.Regexp) bool {
 	return true
 }
 
+// ToRomaji converts input to romaji with the option to uppercase katakana.
 func ToRomaji(input string, options Options, treeMap *tree.Map) string {
 
 	if treeMap == nil {

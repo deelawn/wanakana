@@ -6,16 +6,16 @@ import (
 	"github.com/deelawn/wanakana/internal/character"
 )
 
-func isLeadingWithoutInitialKana(s string, leading bool) bool {
-	return leading && !IsKana(string([]rune(s)[0]))
+func isLeadingWithoutInitialKana(input string, leading bool) bool {
+	return leading && !IsKana(string([]rune(input)[0]))
 }
 
-func isTrailingWithoutFinalKana(s string, leading bool) bool {
-	runes := []rune(s)
+func isTrailingWithoutFinalKana(input string, leading bool) bool {
+	runes := []rune(input)
 	return !leading && !IsKana(string(runes[len(runes)-1]))
 }
 
-func isInvalidMatcher(s string, matchKanji string) bool {
+func isInvalidMatcher(input string, matchKanji string) bool {
 
 	if matchKanji != "" {
 		for _, r := range []rune(matchKanji) {
@@ -26,23 +26,24 @@ func isInvalidMatcher(s string, matchKanji string) bool {
 		return true
 	}
 
-	return IsKana(s)
+	return IsKana(input)
 }
 
-func StripOkurigana(s string, leading bool, matchKanji string) string {
-	if !IsJapanese(s, nil) ||
-		isLeadingWithoutInitialKana(s, leading) ||
-		isTrailingWithoutFinalKana(s, leading) ||
-		isInvalidMatcher(s, matchKanji) {
-		return s
+// StripOkurigana removes leading or trailing kana from a string.
+func StripOkurigana(input string, leading bool, matchKanji string) string {
+	if !IsJapanese(input, nil) ||
+		isLeadingWithoutInitialKana(input, leading) ||
+		isTrailingWithoutFinalKana(input, leading) ||
+		isInvalidMatcher(input, matchKanji) {
+		return input
 	}
 
-	input := s
+	modifiedInput := input
 	if matchKanji != "" {
-		input = matchKanji
+		modifiedInput = matchKanji
 	}
 
-	tokens := Tokenize(input, false, false)
+	tokens := Tokenize(modifiedInput, false, false)
 	var removeToken Token
 	if leading {
 		removeToken = tokens[0]
@@ -65,5 +66,5 @@ func StripOkurigana(s string, leading bool, matchKanji string) string {
 		return input
 	}
 
-	return regex.ReplaceAllString(s, "")
+	return regex.ReplaceAllString(input, "")
 }

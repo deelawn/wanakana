@@ -7,13 +7,14 @@ import (
 	"github.com/deelawn/wanakana/internal/transform"
 )
 
-func IsKatakana(s string) bool {
+// IsKatana returns true if all runes in the string are katakana.
+func IsKatakana(input string) bool {
 
-	if len(s) == 0 {
+	if len(input) == 0 {
 		return false
 	}
 
-	for _, r := range []rune(s) {
+	for _, r := range []rune(input) {
 		if !character.IsKatakana(r) {
 			return false
 		}
@@ -22,6 +23,7 @@ func IsKatakana(s string) bool {
 	return true
 }
 
+// ToKatakana converts input to katakana with the option to pass romaji runes through untransformed.
 func ToKatakana(input string, options Options) string {
 
 	if len(input) == 0 {

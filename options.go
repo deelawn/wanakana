@@ -6,6 +6,7 @@ const (
 	RomanizationHepburn Romanization = "hepburn"
 )
 
+// ToKanaMethod is an enum that determines the method to use when converting to kana.
 type ToKanaMethod int
 
 const (
@@ -14,6 +15,8 @@ const (
 	ToKanaMethodKatakana
 )
 
+// Options is a struct that contains options for the various methods. Note that not all methods
+// will use all options.
 type Options struct {
 	// UseObsoleteKana determines whether to use obsolete characters such as ゐ and ゑ.
 	UseObsoleteKana bool

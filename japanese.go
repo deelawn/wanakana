@@ -8,13 +8,13 @@ import (
 
 // IsJapanese returns true if all characters in the string are Japanese or match
 // the optional regular expression.
-func IsJapanese(s string, regex *regexp.Regexp) bool {
+func IsJapanese(input string, regex *regexp.Regexp) bool {
 
-	if len(s) == 0 {
+	if len(input) == 0 {
 		return false
 	}
 
-	for _, r := range []rune(s) {
+	for _, r := range []rune(input) {
 		if character.IsJapanese(r) {
 			// This character is Japanese; keep going.
 			continue

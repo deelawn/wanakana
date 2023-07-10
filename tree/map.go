@@ -37,6 +37,7 @@ func (m *Map) PutValue(key []rune, value string) {
 	m.Branches[key[0]] = targetMap
 }
 
+// PutMap adds a new branch to the current map witht the given key/value pair.
 func (m *Map) PutMap(key []rune, newMap *Map) {
 
 	if m == nil || newMap == nil || len(key) == 0 {
@@ -55,6 +56,7 @@ func (m *Map) PutMap(key []rune, newMap *Map) {
 	m.Branches[key[0]].PutMap(key[1:], newMap)
 }
 
+// GetValue returns the value associated with the given key, or an empty string if the key is not found.
 func (m *Map) GetValue(key []rune) string {
 
 	if m == nil || len(key) == 0 || m.Branches == nil {
@@ -80,6 +82,7 @@ func (m *Map) GetValue(key []rune) string {
 	return targetMap.GetValue(key[1:])
 }
 
+// GetMap returns the map associated with the given key, or nil if the key is not found.
 func (m *Map) GetMap(key []rune) *Map {
 
 	if m == nil || len(key) == 0 || m.Branches == nil {
@@ -101,6 +104,7 @@ func (m *Map) GetMap(key []rune) *Map {
 	return targetMap.GetMap(key[1:])
 }
 
+// Copy returns a deep copy of the current map.
 func (n *Map) Copy() *Map {
 
 	if n == nil {

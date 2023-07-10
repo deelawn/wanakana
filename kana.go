@@ -8,13 +8,14 @@ import (
 	"github.com/deelawn/wanakana/tree"
 )
 
-func IsKana(s string) bool {
+// IsKana returns true if every rune in the input string is hiragana or katakana.
+func IsKana(input string) bool {
 
-	if len(s) == 0 {
+	if len(input) == 0 {
 		return false
 	}
 
-	for _, r := range []rune(s) {
+	for _, r := range []rune(input) {
 		if character.IsHiragana(r) || character.IsKatakana(r) {
 			continue
 		}
@@ -25,11 +26,9 @@ func IsKana(s string) bool {
 	return true
 }
 
+// ToKana converts input to kana (hiragana and/or katakana).
 func ToKana(input string, options Options, treeMap *tree.Map) string {
 
-	// TODO:
-	// treemap can't be an internal type if it is being used as input.
-	// Or use an interface instead.
 	if treeMap == nil {
 		treeMap = createRomajiToKanaTree(options.IMEMode, options.UseObsoleteKana, options.CustomKanaMapping)
 	}
