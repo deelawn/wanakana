@@ -3,7 +3,7 @@ package transform
 import (
 	"sync"
 
-	"github.com/deelawn/wanakana/internal/tree"
+	"github.com/deelawn/wanakana/tree"
 )
 
 const romanizationHepburn string = "hepburn"

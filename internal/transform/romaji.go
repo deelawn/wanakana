@@ -4,7 +4,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/deelawn/wanakana/internal/tree"
+	"github.com/deelawn/wanakana/tree"
 )
 
 // TODO:

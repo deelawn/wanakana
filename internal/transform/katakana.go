@@ -3,7 +3,7 @@ package transform
 import (
 	"github.com/deelawn/wanakana/internal/character"
 	"github.com/deelawn/wanakana/internal/codepoints"
-	"github.com/deelawn/wanakana/internal/tree"
+	"github.com/deelawn/wanakana/tree"
 )
 
 var longVowels = map[rune]rune{

@@ -5,7 +5,7 @@ import (
 
 	"github.com/deelawn/wanakana/internal/character"
 	"github.com/deelawn/wanakana/internal/transform"
-	"github.com/deelawn/wanakana/internal/tree"
+	"github.com/deelawn/wanakana/tree"
 )
 
 func IsKana(s string) bool {
