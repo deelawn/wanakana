@@ -3,10 +3,9 @@ package transform
 import (
 	"sync"
 
+	"github.com/deelawn/wanakana/config"
 	"github.com/deelawn/wanakana/tree"
 )
-
-const romanizationHepburn string = "hepburn"
 
 // KTR = kana to romaji
 
@@ -115,7 +114,7 @@ var (
 	ktrTreeMapMu sync.Mutex
 )
 
-func GetKanaToRomajiTreeMap(romanization string) *tree.Map {
+func GetKanaToRomajiTreeMap(romanization config.Romanization) *tree.Map {
 
 	ktrTreeMapMu.Lock()
 	defer ktrTreeMapMu.Unlock()
@@ -127,10 +126,10 @@ func GetKanaToRomajiTreeMap(romanization string) *tree.Map {
 	return ktrTreeMap
 }
 
-func createKanaToRomajiTreeMap(romanization string) *tree.Map {
+func createKanaToRomajiTreeMap(romanization config.Romanization) *tree.Map {
 
 	// They are requesting an unsupported romanization system.
-	if romanization != romanizationHepburn && romanization != "" {
+	if romanization != config.RomanizationHepburn {
 		return nil
 	}
 

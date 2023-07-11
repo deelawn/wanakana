@@ -4,6 +4,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/deelawn/wanakana/config"
 	"github.com/deelawn/wanakana/internal/character"
 	"github.com/deelawn/wanakana/internal/transform"
 	"github.com/deelawn/wanakana/tree"
@@ -35,7 +36,7 @@ func IsRomaji(input string, regex *regexp.Regexp) bool {
 }
 
 // ToRomaji converts input to romaji with the option to uppercase katakana.
-func ToRomaji(input string, options Options, treeMap *tree.Map) string {
+func ToRomaji(input string, options config.Options, treeMap *tree.Map) string {
 
 	if treeMap == nil {
 		treeMap = createKanaToRomajiTree(options.Romanization, options.CustomKanaMapping)
@@ -57,9 +58,9 @@ func ToRomaji(input string, options Options, treeMap *tree.Map) string {
 	return result
 }
 
-func createKanaToRomajiTree(romanization Romanization, customMapping CustomMapping) *tree.Map {
+func createKanaToRomajiTree(romanization config.Romanization, customMapping config.CustomMapping) *tree.Map {
 
-	treeMap := transform.GetKanaToRomajiTreeMap(string(romanization))
+	treeMap := transform.GetKanaToRomajiTreeMap(romanization)
 	if customMapping != nil {
 		treeMap = treeMap.Copy()
 		customMapping.Apply(treeMap)

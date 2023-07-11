@@ -3,6 +3,7 @@ package wanakana
 import (
 	"strings"
 
+	"github.com/deelawn/wanakana/config"
 	"github.com/deelawn/wanakana/internal/character"
 	"github.com/deelawn/wanakana/internal/transform"
 )
@@ -24,7 +25,7 @@ func IsKatakana(input string) bool {
 }
 
 // ToKatakana converts input to katakana with the option to pass romaji runes through untransformed.
-func ToKatakana(input string, options Options) string {
+func ToKatakana(input string, options config.Options) string {
 
 	if len(input) == 0 {
 		return ""

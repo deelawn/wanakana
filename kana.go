@@ -3,6 +3,7 @@ package wanakana
 import (
 	"strings"
 
+	"github.com/deelawn/wanakana/config"
 	"github.com/deelawn/wanakana/internal/character"
 	"github.com/deelawn/wanakana/internal/transform"
 	"github.com/deelawn/wanakana/tree"
@@ -27,19 +28,23 @@ func IsKana(input string) bool {
 }
 
 // ToKana converts input to kana (hiragana and/or katakana).
-func ToKana(input string, options Options, treeMap *tree.Map) string {
+func ToKana(input string, options config.Options, treeMap *tree.Map) string {
 
 	if treeMap == nil {
 		treeMap = createRomajiToKanaTree(options.IMEMode, options.UseObsoleteKana, options.CustomKanaMapping)
 	}
 
-	tokens := transform.ToKanaToken([]rune(strings.ToLower(input)), treeMap, !(options.IMEMode == ToKanaMethodNone))
+	tokens := transform.ToKanaToken(
+		[]rune(strings.ToLower(input)),
+		treeMap,
+		!(options.IMEMode == config.ToKanaMethodNone),
+	)
 
 	var result string
 	for _, token := range tokens {
-		enforceHiragana := options.IMEMode == ToKanaMethodHiragana
+		enforceHiragana := options.IMEMode == config.ToKanaMethodHiragana
 		// Katakana preference can be delineated by making an intended token all uppercase.
-		enforceKatakana := options.IMEMode == ToKanaMethodKatakana ||
+		enforceKatakana := options.IMEMode == config.ToKanaMethodKatakana ||
 			strings.ToUpper(string(input[token.Start:token.End])) == string(input[token.Start:token.End])
 
 		if enforceHiragana || !enforceKatakana {
@@ -53,10 +58,14 @@ func ToKana(input string, options Options, treeMap *tree.Map) string {
 	return result
 }
 
-func createRomajiToKanaTree(imeMode ToKanaMethod, useObsoleteKana bool, customKanaMapping CustomMapping) *tree.Map {
+func createRomajiToKanaTree(
+	imeMode config.ToKanaMethod,
+	useObsoleteKana bool,
+	customKanaMapping config.CustomMapping,
+) *tree.Map {
 
 	treeMap := transform.GetRomajiToKanaTree()
-	if imeMode != ToKanaMethodNone {
+	if imeMode != config.ToKanaMethodNone {
 		treeMap = transform.ToIMEModeTree(treeMap)
 	}
 	if useObsoleteKana {

@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/deelawn/wanakana"
+	"github.com/deelawn/wanakana/config"
 )
 
 func TestIsKatakana(t *testing.T) {
@@ -50,7 +51,7 @@ func TestToKatakana(t *testing.T) {
 	var tests = []struct {
 		name     string
 		input    string
-		options  wanakana.Options
+		options  config.Options
 		expected string
 	}{
 		{
@@ -64,7 +65,7 @@ func TestToKatakana(t *testing.T) {
 		{
 			name:     "pass romaji with hiragana",
 			input:    "only かな",
-			options:  wanakana.Options{PassRomaji: true},
+			options:  config.Options{PassRomaji: true},
 			expected: "only カナ",
 		},
 		{
@@ -75,7 +76,7 @@ func TestToKatakana(t *testing.T) {
 		{
 			name:     "obsolete wi",
 			input:    "wi",
-			options:  wanakana.Options{UseObsoleteKana: true},
+			options:  config.Options{UseObsoleteKana: true},
 			expected: "ヰ",
 		},
 	}

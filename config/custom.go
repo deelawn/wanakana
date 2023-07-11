@@ -1,4 +1,4 @@
-package wanakana
+package config
 
 // TODO: Make a default CustomMapping implementation that is a string -> string map.
 type CustomMapping interface {

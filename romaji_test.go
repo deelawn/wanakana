@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/deelawn/wanakana"
+	"github.com/deelawn/wanakana/config"
 )
 
 func TestIsRomaji(t *testing.T) {
@@ -63,7 +64,7 @@ func TestToRomaji(t *testing.T) {
 	var tests = []struct {
 		name     string
 		input    string
-		options  wanakana.Options
+		options  config.Options
 		expected string
 	}{
 		{
@@ -82,14 +83,14 @@ func TestToRomaji(t *testing.T) {
 		{
 			name:     "upcase katakana",
 			input:    "ひらがな　カタカナ",
-			options:  wanakana.Options{UppercaseKatakana: true},
+			options:  config.Options{UppercaseKatakana: true},
 			expected: "hiragana KATAKANA",
 		},
 		{
 			name:  "custom mapping",
 			input: "つじぎり",
-			options: wanakana.Options{
-				CustomKanaMapping: wanakana.NewCustomMappingKeyValue(
+			options: config.Options{
+				CustomKanaMapping: config.NewCustomMappingKeyValue(
 					map[string]string{
 						"じ": "zi",
 						"つ": "tu",

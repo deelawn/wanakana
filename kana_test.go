@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/deelawn/wanakana"
+	"github.com/deelawn/wanakana/config"
 )
 
 func TestIsKana(t *testing.T) {
@@ -56,7 +57,7 @@ func TestToKana(t *testing.T) {
 	var tests = []struct {
 		name     string
 		input    string
-		options  wanakana.Options
+		options  config.Options
 		expected string
 	}{
 		{
@@ -90,14 +91,14 @@ func TestToKana(t *testing.T) {
 		{
 			name:     "obsolete we",
 			input:    "we",
-			options:  wanakana.Options{UseObsoleteKana: true},
+			options:  config.Options{UseObsoleteKana: true},
 			expected: "ゑ",
 		},
 		{
 			name:  "custom mapping",
 			input: "wanakana",
-			options: wanakana.Options{
-				CustomKanaMapping: wanakana.NewCustomMappingKeyValue(
+			options: config.Options{
+				CustomKanaMapping: config.NewCustomMappingKeyValue(
 					map[string]string{
 						"na": "に",
 						"ka": "bana",

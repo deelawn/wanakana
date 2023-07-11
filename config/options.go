@@ -1,9 +1,11 @@
-package wanakana
+package config
 
-type Romanization string
+// Romanization is an enum that determines the romanization to use when converting to/from romaji.
+// Hepburn is the only supported romanization at this time.
+type Romanization int
 
 const (
-	RomanizationHepburn Romanization = "hepburn"
+	RomanizationHepburn Romanization = iota
 )
 
 // ToKanaMethod is an enum that determines the method to use when converting to kana.
@@ -26,7 +28,9 @@ type Options struct {
 	IgnoreLongVowelMark bool
 	// UppercaseKatakana determines whether to use uppercase characters when converting from katakana to romaji.
 	UppercaseKatakana bool
-	// Romanization determines the romanization to use when converting to/from romaji.
+	// Romanization determines the romanization to use when converting to/from romaji. Hepburn is the default and only
+	// supported romanization at this time. Providing any other value will result in an empty tree being generated
+	// and no transliteration taking place.
 	Romanization Romanization
 	// IMEMode determines whether to use IME mode as well as the to kana method
 	IMEMode ToKanaMethod
