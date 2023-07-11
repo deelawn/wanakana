@@ -117,6 +117,30 @@ func TestToKana(t *testing.T) {
 			input:    "hahha",
 			expected: "はっは",
 		},
+		{
+			name:     "hiragana katakana - enforce katakana",
+			input:    "onaji BUTTSUUJI",
+			options:  config.Options{IMEMode: config.ToKanaMethodKatakana},
+			expected: "オナジ ブッツウジ",
+		},
+		{
+			name:     "katakana hiragana - enforce katakana",
+			input:    "ONAJI buttsuuji",
+			options:  config.Options{IMEMode: config.ToKanaMethodKatakana},
+			expected: "オナジ ブッツウジ",
+		},
+		{
+			name:     "mixed with kanji - enforce katakana",
+			input:    "座禅‘zazen’スタイル",
+			options:  config.Options{IMEMode: config.ToKanaMethodKatakana},
+			expected: "座禅「ザゼン」スタイル",
+		},
+		{
+			name:     "with dash - enforce katakana",
+			input:    "batsuge-mu",
+			options:  config.Options{IMEMode: config.ToKanaMethodKatakana},
+			expected: "バツゲーム",
+		},
 	}
 
 	for _, tt := range tests {
