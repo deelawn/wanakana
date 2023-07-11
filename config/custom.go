@@ -1,6 +1,6 @@
 package config
 
-// TODO: Make a default CustomMapping implementation that is a string -> string map.
+// CustomMapping defines an interface for custom mappings.
 type CustomMapping interface {
 	Apply(TreeMapper)
 }

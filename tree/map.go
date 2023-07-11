@@ -37,7 +37,7 @@ func (m *Map) PutValue(key []rune, value string) {
 	m.Branches[key[0]] = targetMap
 }
 
-// PutMap adds a new branch to the current map witht the given key/value pair.
+// PutMap adds a new branch to the current map with the given key/value pair.
 func (m *Map) PutMap(key []rune, newMap *Map) {
 
 	if m == nil || newMap == nil || len(key) == 0 {

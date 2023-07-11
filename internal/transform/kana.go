@@ -296,7 +296,7 @@ func parseKanaToken(input []rune, treeMap *tree.Map, convertEnding bool) *Conver
 
 	convertedToken := parseKanaToken(input[1:], nextTreeMap, convertEnding)
 	if convertedToken != nil {
-		// parseKanaToken is called recusrively, so each time it returns a non-nil coverted token,
+		// parseKanaToken is called recusrively, so each time it returns a non-nil converted token,
 		// the end index needs to be incremented by one because the returning invocation has no
 		// knowledge of the number of invocations that preceded it.
 		convertedToken.End += 1

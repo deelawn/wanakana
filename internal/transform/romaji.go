@@ -7,10 +7,6 @@ import (
 	"github.com/deelawn/wanakana/tree"
 )
 
-// TODO:
-// - obsolete kana map
-// - ime mode map
-
 // rtk = Romaji To Kana
 var (
 	rtkConsonants = map[rune]rune{
