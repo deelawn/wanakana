@@ -15,18 +15,18 @@ func isTrailingWithoutFinalKana(input string, leading bool) bool {
 	return !leading && !IsKana(string(runes[len(runes)-1]))
 }
 
-func isInvalidMatcher(input string, matchKanji string) bool {
+func isValidMatcher(input string, matchKanji string) bool {
 
 	if matchKanji != "" {
 		for _, r := range []rune(matchKanji) {
 			if character.IsKanji(r) {
-				return false
+				return true
 			}
 		}
-		return true
+		return false
 	}
 
-	return IsKana(input)
+	return !IsKana(input)
 }
 
 // StripOkurigana removes leading or trailing kana from a string.
@@ -34,7 +34,7 @@ func StripOkurigana(input string, leading bool, matchKanji string) string {
 	if !IsJapanese(input, nil) ||
 		isLeadingWithoutInitialKana(input, leading) ||
 		isTrailingWithoutFinalKana(input, leading) ||
-		isInvalidMatcher(input, matchKanji) {
+		!isValidMatcher(input, matchKanji) {
 		return input
 	}
 

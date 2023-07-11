@@ -47,6 +47,13 @@ func TestStripOkurigana(t *testing.T) {
 			matchKanji: "お祝い",
 			expected:   "みまい",
 		},
+		{
+			// Invalid match kanji results in this spitting out the input.
+			name:       "invalid match kanji",
+			input:      "おみまい",
+			matchKanji: "おみまい",
+			expected:   "おみまい",
+		},
 	}
 
 	for _, tt := range tests {

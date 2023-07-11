@@ -79,6 +79,16 @@ func TestToKatakana(t *testing.T) {
 			options:  config.Options{UseObsoleteKana: true},
 			expected: "ヰ",
 		},
+		{
+			name:     "english punctuation",
+			input:    string([]rune{0x2018, 0x2019}),
+			expected: "「」",
+		},
+		{
+			name:     "unsupported",
+			input:    string([]rune{0x0600}),
+			expected: "؀",
+		},
 	}
 
 	for _, tt := range tests {

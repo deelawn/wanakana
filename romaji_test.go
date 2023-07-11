@@ -105,6 +105,11 @@ func TestToRomaji(t *testing.T) {
 			input:    "オーサカ おおさか オオサカ",
 			expected: "oosaka oosaka oosaka",
 		},
+		{
+			name:     "small katakana",
+			input:    "ァィゥェォッャュョヮヵヶ",
+			expected: "aiueoyayuyoゎヵヶ",
+		},
 	}
 
 	for _, tt := range tests {
