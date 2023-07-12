@@ -9,9 +9,9 @@ No errors are returned by any of the exported functions or methods; this is to k
 
 ## Improvements
 If anyone would like to make a PR to improve this repository, here are a few suggestions regarding what could be done:
-[] Improve tree caching -- currently only one tree can be stored in the cache and it is not modifiable
-[] Add a wasm compilation target and add support for binding and unbinding an element similar to what the original implementation is capable of
-[] Move the tree generation logic into a `generate` package. Running `go generate` should generate source code with the `go:embed` directive along with all of the key/value pairs to store in the tree. This makes it more transparent as to what each tree contains by default rather than having to decipher how it is being generated.
+- [ ] Improve tree caching -- currently only one tree can be stored in the cache and it is not modifiable
+- [ ] Add a wasm compilation target and add support for binding and unbinding an element similar to what the original implementation is capable of
+- [ ] Move the tree generation logic into a `generate` package. Running `go generate` should generate source code with the `go:embed` directive along with all of the key/value pairs to store in the tree. This makes it more transparent as to what each tree contains by default rather than having to decipher how it is being generated.
 
 ## Usage
 Here is an example of how this package can be used:
