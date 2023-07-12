@@ -37,7 +37,7 @@ func ToKana(input string, options config.Options, treeMap *tree.Map) string {
 	tokens := transform.ToKanaToken(
 		[]rune(strings.ToLower(input)),
 		treeMap,
-		!(options.IMEMode == config.ToKanaMethodNone),
+		options.IMEMode != config.ToKanaMethodNone,
 	)
 
 	var result string
